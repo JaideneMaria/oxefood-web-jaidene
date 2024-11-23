@@ -19,7 +19,7 @@ export default function ListProduto() {
                 setLista(response.data)
             })
     }
- 
+
     return (
         <div>
             <MenuSistema tela={'produto'} />
@@ -63,7 +63,7 @@ export default function ListProduto() {
 
                                 {lista.map(produto => (
 
-                                        <Table.Row key={produto.id}>
+                                    <Table.Row key={produto.id}>
 
                                         <Table.Cell>{produto.codigo}</Table.Cell>
                                         <Table.Cell>{produto.titulo}</Table.Cell>
@@ -79,8 +79,9 @@ export default function ListProduto() {
                                                 color='green'
                                                 title='Clique aqui para editar os dados deste produto'
                                                 icon>
-                                                <Icon name='edit' />
+                                                <Link to="/form-produto" state={{ id: produto.id }} style={{ color: 'green' }}> <Icon name='edit' /> </Link>
                                             </Button> &nbsp;
+
 
 
 
