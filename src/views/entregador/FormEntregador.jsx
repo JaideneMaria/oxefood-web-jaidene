@@ -1,9 +1,10 @@
-import React, { useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import InputMask from 'react-input-mask';
+import { Link, useLocation } from "react-router-dom";
 import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
-import { Link } from "react-router-dom";
+
 
 export default function FormEntregador() {
 
@@ -23,6 +24,33 @@ export default function FormEntregador() {
     const [enderecoCep, setEnderecoCep] = useState();
     const [enderecoUf, setEnderecoUf] = useState();
     const [ativo, setAtivo] = useState();
+
+    const { state } = useLocation();
+    const [idEntregador, setIdEntregador] = useState();
+
+    useEffect(() => {
+        if (state != null && state.id != null) {
+            axios.get("http://localhost:8080/api/entregador/" + state.id)
+                .then((response) => {
+                    setIdEntregador(response.data.id)
+                    setNome(response.data.nome)
+                    setCpf(response.data.cpf)
+                    setRg(response.data.rg)
+                    setDataNascimento(response.data.dataNascimento)
+                    setFoneCelular(response.data.foneCelular)
+                    setFoneFixo(response.data.foneFixo)
+                    setqtdEntregasRealizadas(response.data.qtdEntregasRealizadas)
+                    setValorFrete(response.data.enderecoRua)
+                    setEnderecoComplemento(response.data.enderecoComplemento)
+                    setEnderecoNumero(response.data.enderecoNumero)
+                    setEnderecoBairro(response.data.enderecoBairro)
+                    setEnderecoCidade(response.data.enderecoCep)
+                    setEnderecoUf(response.data.enderecoUf)
+                    setAtivo(response.data.ativo)
+                })
+        }
+    }, [state])
+
 
     function salvar() {
 
@@ -68,12 +96,14 @@ export default function FormEntregador() {
             <MenuSistema tela={'entregador'} />
 
             <Container textAlign='justified' style={{ marginTop: '3%' }}>
-                <h2>
-                    <span style={{ color: 'darkgray' }}>
-                        Entregador &nbsp;<Icon name='angle double right' size="small" />
-                    </span>
-                    Cadastro
-                </h2>
+
+                {idEntregador === undefined &&
+                    <h2> <span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /> </span> Cadastro</h2>
+                }
+                {idEntregador != undefined &&
+                    <h2> <span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /> </span> Alteração</h2>
+                }
+
                 <Divider />
 
                 <Form style={{ marginTop: '4%' }}>
