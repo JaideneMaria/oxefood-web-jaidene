@@ -1,13 +1,11 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import InputMask from 'react-input-mask';
 import { Link, useLocation } from "react-router-dom";
-import { Button, Container, Divider, Form, Icon } from 'semantic-ui-react';
+import { Button, Container, Divider, Form, Icon} from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
 
-
 export default function FormEntregador() {
-
     const [nome, setNome] = useState();
     const [cpf, setCpf] = useState();
     const [rg, setRg] = useState();
@@ -32,28 +30,28 @@ export default function FormEntregador() {
         if (state != null && state.id != null) {
             axios.get("http://localhost:8080/api/entregador/" + state.id)
                 .then((response) => {
-                    setIdEntregador(response.data.id)
-                    setNome(response.data.nome)
-                    setCpf(response.data.cpf)
-                    setRg(response.data.rg)
-                    setDataNascimento(response.data.dataNascimento)
-                    setFoneCelular(response.data.foneCelular)
-                    setFoneFixo(response.data.foneFixo)
-                    setqtdEntregasRealizadas(response.data.qtdEntregasRealizadas)
-                    setValorFrete(response.data.enderecoRua)
-                    setEnderecoComplemento(response.data.enderecoComplemento)
-                    setEnderecoNumero(response.data.enderecoNumero)
-                    setEnderecoBairro(response.data.enderecoBairro)
-                    setEnderecoCidade(response.data.enderecoCep)
-                    setEnderecoUf(response.data.enderecoUf)
-                    setAtivo(response.data.ativo)
-                })
+                    setIdEntregador(response.data.id);
+                    setNome(response.data.nome);
+                    setCpf(response.data.cpf);
+                    setRg(response.data.rg);
+                    setDataNascimento(formatarData(response.data.dataNascimento));
+                    setFoneCelular(response.data.foneCelular);
+                    setFoneFixo(response.data.foneFixo);
+                    setqtdEntregasRealizadas(response.data.qtdEntregasRealizadas);
+                    setValorFrete(response.data.valorFrete);
+                    setEnderecoRua(response.data.enderecoRua);
+                    setEnderecoComplemento(response.data.enderecoComplemento);
+                    setEnderecoNumero(response.data.enderecoNumero);
+                    setEnderecoBairro(response.data.enderecoBairro);
+                    setEnderecoCidade(response.data.enderecoCidade);
+                    setEnderecoCep(response.data.enderecoCep);
+                    setEnderecoUf(response.data.enderecoUf);
+                    setAtivo(response.data.ativo);
+                });
         }
-    }, [state])
-
+    }, [state]);
 
     function salvar() {
-
         let entregadorRequest = {
             nome: nome,
             cpf: cpf,
@@ -70,19 +68,20 @@ export default function FormEntregador() {
             enderecoCidade: enderecoCidade,
             enderecoCep: enderecoCep,
             enderecoUf: enderecoUf,
-            ativo: ativo
+            ativo: ativo,
+        };
+
+        if (idEntregador != null) { // Alteração:
+            axios.put("http://localhost:8080/api/entregador/" + idEntregador, entregadorRequest)
+                .then(() => { console.log('Entregador alterado com sucesso.') })
+                .catch(() => { console.log('Erro ao alterar um entregador.') });
+        } else { // Cadastro:
+            axios.post("http://localhost:8080/api/entregador", entregadorRequest)
+                .then(() => { console.log('Entregador cadastrado com sucesso.') })
+                .catch(() => { console.log('Erro ao incluir o entregador.') });
         }
-
-
-
-        axios.post("http://localhost:8080/api/entregador", entregadorRequest)
-            .then((response) => {
-                console.log('Entregador cadastrado com sucesso.')
-            })
-            .catch((error) => {
-                console.log('Erro ao incluir o entregador.')
-            })
     }
+    
 
     const countryOptions = [
         { key: 'pe', value: 'pe', text: 'Pernambuco' },
@@ -90,22 +89,28 @@ export default function FormEntregador() {
         { key: 'ce', value: 'ce', text: 'Ceará' },
     ];
 
-    return (
+    function formatarData(dataParam) {  
 
+        if (dataParam === null || dataParam === '' || dataParam === undefined) {
+            return ''
+        }
+
+        let arrayData = dataParam.split('-');
+        return arrayData[2] + '/' + arrayData[1] + '/' + arrayData[0];
+    }
+
+
+    return (
         <div>
             <MenuSistema tela={'entregador'} />
-
             <Container textAlign='justified' style={{ marginTop: '3%' }}>
-
                 {idEntregador === undefined &&
-                    <h2> <span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /> </span> Cadastro</h2>
+                    <h2><span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /></span> Cadastro</h2>
                 }
-                {idEntregador != undefined &&
-                    <h2> <span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /> </span> Alteração</h2>
+                {idEntregador !== undefined &&
+                    <h2><span style={{ color: 'darkgray' }}> Entregador &nbsp;<Icon name='angle double right' size="small" /></span> Alteração</h2>
                 }
-
                 <Divider />
-
                 <Form style={{ marginTop: '4%' }}>
                     <Form.Group widths='equal'>
                         <Form.Input
@@ -292,6 +297,5 @@ export default function FormEntregador() {
                 </Form>
             </Container>
         </div>
-
     );
 }
