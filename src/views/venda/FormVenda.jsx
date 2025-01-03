@@ -5,6 +5,8 @@ import InputMask from 'react-input-mask';
 import { Button, Container, Divider, Form, Icon, FormTextArea} from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
 import { Link, useLocation } from "react-router-dom";
+import { notifyError, notifySuccess } from '../../views/util/Util';
+
 
 export default function FormVenda() {
 
@@ -59,8 +61,18 @@ export default function FormVenda() {
                 .catch((error) => { console.log('Erro ao alterar a venda.') })
         } else { //Cadastro:
             axios.post("http://localhost:8080/api/venda", vendaRequest)
-                .then((response) => { console.log('Venda cadastrada com sucesso.') })
-                .catch((error) => { console.log('Erro ao incluir a venda.') })
+                .then((response) => { 
+                    notifySuccess('Venda cadastrada com sucesso.')
+ })
+                .catch((error) => { 
+                    if (error.response.data.errors != undefined) {
+                        for (let i = 0; i < error.response.data.errors.length; i++) {
+                            notifyError(error.response.data.errors[i].defaultMessage)
+                     }
+             } else {
+                 notifyError(error.response.data.message)
+             }
+          })
         }
     }
 

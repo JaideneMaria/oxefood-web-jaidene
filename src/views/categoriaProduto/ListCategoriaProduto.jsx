@@ -1,22 +1,19 @@
 import axios from 'axios';
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button, Container, Divider, Icon, Table, Header, Modal } from 'semantic-ui-react';
+import { Button, Container, Divider, Icon, Modal, Header, Table } from 'semantic-ui-react';
 import MenuSistema from '../../MenuSistema';
 
-export default function ListProduto() {
+export default function ListCategoriaProduto() {
 
     const [lista, setLista] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [idRemover, setIdRemover] = useState();
 
-
     function confirmaRemover(id) {
         setOpenModal(true)
         setIdRemover(id)
     }
-
-
 
     useEffect(() => {
         carregarLista();
@@ -24,39 +21,42 @@ export default function ListProduto() {
 
     function carregarLista() {
 
-        axios.get("http://localhost:8080/api/produto")
+        axios.get("http://localhost:8080/api/categoriaproduto")
             .then((response) => {
                 setLista(response.data)
             })
-    }   
-
+    }
+   
     async function remover() {
 
-        await axios.delete('http://localhost:8080/api/produto/' + idRemover)
-        .then((response) => {
-  
-            console.log(' removido com sucesso.')
-  
-            axios.get("http://localhost:8080/api/produto")
+        await axios.delete('http://localhost:8080/api/categoriaproduto/' + idRemover)
             .then((response) => {
-                setLista(response.data)
+
+                console.log('Categoria removida com sucesso.')
+
+                axios.get("http://localhost:8080/api/categoriaproduto")
+                    .then((response) => {
+                        setLista(response.data)
+                    })
             })
-        })
-        .catch((error) => {
-            console.log('Erro ao remover um produto.')
-        })
+            .catch((error) => {
+                console.log('Erro ao remover a categoria.')
+            })
         setOpenModal(false)
     }
- 
+
+
+
+
 
     return (
         <div>
-            <MenuSistema tela={'produto'} />
+            <MenuSistema tela={'categoriaProduto'} />
             <div style={{ marginTop: '3%' }}>
 
                 <Container textAlign='justified' >
 
-                    <h2> Produto </h2>
+                    <h2> Categoria de Produto </h2>
                     <Divider />
 
                     <div style={{ marginTop: '4%' }}>
@@ -67,7 +67,7 @@ export default function ListProduto() {
                             icon='clipboard outline'
                             floated='right'
                             as={Link}
-                            to='/form-produto'
+                            to='/form-categoriaproduto'
                         />
 
                         <br /><br /><br />
@@ -76,55 +76,40 @@ export default function ListProduto() {
 
                             <Table.Header>
                                 <Table.Row>
-                                    <Table.HeaderCell>Codigo</Table.HeaderCell>
-                                    <Table.HeaderCell>Categoria</Table.HeaderCell>
-                                    <Table.HeaderCell>Titulo</Table.HeaderCell>
                                     <Table.HeaderCell>Descricao</Table.HeaderCell>
-                                    <Table.HeaderCell>Valor Unitario</Table.HeaderCell>
-                                    <Table.HeaderCell>Tempo de Entrega Minimo</Table.HeaderCell>
-                                    <Table.HeaderCell>Tempo de Entrega Maximo</Table.HeaderCell>
-                                    <Table.HeaderCell textAlign='center'>Ações</Table.HeaderCell>
+                                    
                                 </Table.Row>
-
-
                             </Table.Header>
 
                             <Table.Body>
 
-                                {lista.map(produto => (
+                                {lista.map(categoriaProduto => (
 
-                                    <Table.Row key={produto.id}>
-
-                                        <Table.Cell>{produto.codigo}</Table.Cell>
-                                        <Table.Cell>{produto.categoria.descricao}</Table.Cell>
-                                        <Table.Cell>{produto.titulo}</Table.Cell>
-                                        <Table.Cell>{produto.descricao}</Table.Cell>
-                                        <Table.Cell>{produto.valorUnitario}</Table.Cell>
-                                        <Table.Cell>{produto.tempoEntregaMinimo}</Table.Cell>
-                                        <Table.Cell>{produto.tempoEntregaMaximo}</Table.Cell>
+                                    <Table.Row key={categoriaProduto.id}>
+                                        <Table.Cell>{categoriaProduto.descricao}</Table.Cell>
+                                        
                                         <Table.Cell textAlign='center'>
 
                                             <Button
                                                 inverted
                                                 circular
                                                 color='green'
-                                                title='Clique aqui para editar os dados deste produto'
+                                                title='Clique aqui para editar os dados desta categoria'
                                                 icon>
-                                                <Link to="/form-produto" state={{ id: produto.id }} style={{ color: 'green' }}> <Icon name='edit' /> </Link>
+                                                <Link to="/form-categoriaProduto" state={{ id: categoriaProduto.id }} style={{ color: 'green' }}> <Icon name='edit' /> </Link>
                                             </Button> &nbsp;
-
-
 
 
                                             <Button
                                                 inverted
                                                 circular
                                                 color='red'
-                                                title='Clique aqui para remover este produto'
+                                                title='Clique aqui para remover esta categoria'
                                                 icon
-                                                    onClick={e => confirmaRemover(produto.id)}>
+                                                onClick={e => confirmaRemover(categoriaProduto.id)}>
                                                 <Icon name='trash' />
                                             </Button>
+
 
                                         </Table.Cell>
                                     </Table.Row>
@@ -135,6 +120,7 @@ export default function ListProduto() {
                     </div>
                 </Container>
             </div>
+
             <Modal
                 basic
                 onClose={() => setOpenModal(false)}
